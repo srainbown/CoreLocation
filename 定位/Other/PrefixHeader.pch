@@ -15,9 +15,9 @@
 #define MAS_SHORTHAND_GLOBALS
 #import <Masonry.h>
 
+//屏幕宽高
 #define KWidth self.view.bounds.size.width
 #define KHeight self.view.bounds.size.height
-
 //根据苹果6的宽获取响应的宽等比
 #define KWidthScale [UIScreen mainScreen].bounds.size.width/375
 //根据苹果6的高获取响应的高等比
@@ -26,8 +26,54 @@
 
 #define LZYWeakSelf __weak __typeof(self) weakSelf = self
 
+//RGB
+#define RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0f green:(g)/255.0f blue:(b)/255.0f alpha:1]
 #define RGBACOLOR(r,g,b,a) [UIColor colorWithRed:(r)/255.0f green:(g)/255.0f blue:(b)/255.0f alpha:(a)]
+// 传入图片名称,获取UIImage
+#define ImageNamed(_pointer) [UIImage imageNamed:_pointer]
+// 获取 NSUserDefaults 对象
+#define USER_DEFAULT [NSUserDefaults standardUserDefaults]
 
-#define C1 RGBACOLOR(245, 245, 245, 1)
+/** 字符串是否为空*/
+#define kStringIsEmpty(str)     ([str isKindOfClass:[NSNull class]] || str == nil || [str length] < 1 ? YES : NO )
+
+/** 数组是否为空*/
+#define kArrayIsEmpty(array)    (array == nil || [array isKindOfClass:[NSNull class]] || array.count == 0)
+
+/** 字典是否为空*/
+#define kDictIsEmpty(dic)       (dic == nil || [dic isKindOfClass:[NSNull class]] || dic.allKeys == 0)
+
+/** 是否是空对象*/
+#define kObjectIsEmpty(_object) (_object == nil || [_object isKindOfClass:[NSNullclass]] || ([_object respondsToSelector:@selector(length)] && [(NSData*)_object length] == 0) || ([_object respondsToSelector:@selector(count)] && [(NSArray*)_object count] == 0))
+
+
+
+/** 获取沙盒 Document 路径*/
+#define kDocumentPath       [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject]
+
+/** 获取沙盒 temp 路径(注:iPhone 重启会清空)*/
+#define kTempPath           NSTemporaryDirectory()
+
+/** 获取沙盒 Cache 路径*/
+#define kCachePath          [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject]
+
+/** 获取程序包中程序路径*/
+#define kResource(f, t)     [[NSBundle mainBundle] pathForResource:(f) ofType:(t)];
+
+//模拟器
+
+#pragma mark - 缩写
+
+#define kApplication        [UIApplication sharedApplication]
+
+#define kKeyWindow          [UIApplication sharedApplication].keyWindow
+
+#define kAppDelegate        ((AppDelegate*)[UIApplication sharedApplication].delegate)
+
+#define kUserDefaults       [NSUserDefaults standardUserDefaults]
+
+#define kNotificationCenter [NSNotificationCenter defaultCenter]
+
+
 
 #endif /* PrefixHeader_pch */
