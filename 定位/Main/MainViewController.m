@@ -52,7 +52,7 @@
 
 @property (nonatomic, strong) CLGeocoder *geoC;//地理编码器
 
-@property (nonatomic, strong) UILabel *label;
+@property (nonatomic, strong) UILabel *clLabel;
 
 @end
 
@@ -100,6 +100,22 @@
     }
     return _geoC;
 }
+-(UILabel *)clLabel{
+    if (_clLabel == nil) {
+        _clLabel = [[UILabel alloc]init];
+        [self.view addSubview:_clLabel];
+        [_clLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.equalTo(self.view);
+            make.left.mas_equalTo(20 * KWidthScale);
+            make.right.mas_equalTo(-20 * KWidthScale);
+        }];
+        _clLabel.textAlignment = NSTextAlignmentCenter;
+        _clLabel.textColor = [UIColor orangeColor];
+        _clLabel.numberOfLines = 0;
+        
+    }
+    return _clLabel;
+}
 
 
 #pragma mark -- CLLocationManagerDelegate
@@ -129,17 +145,15 @@
     
             //模拟器始终显示为苹果总部地址
             //包含区,街道等信息的地标对象
-            CLPlacemark *placeMark = [placemarks firstObject];
+            CLPlacemark *placeMark = [placemarks lastObject];
             //城市名称 (四大直辖市的城市信息无法通过locality获得，只能通过获取省份的方法来获得（如果city为空，则可知为直辖市）)
             NSString *city = placeMark.locality;
             //街道名称
             NSString *street = placeMark.thoroughfare;
             //全称
             NSString *name = placeMark.name;
-            
-            NSLog(@"城市 == %@,街道 == %@,全称 == %@",city,street,name);
+            self.clLabel.text = [NSString stringWithFormat:@" 城市 : %@ , 街道 : %@ , 全称 : %@ ",city,street,name];
         }
-
     }];
     
     // locations: 按时间先后顺序排序
