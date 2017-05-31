@@ -7,6 +7,8 @@
 //
 
 #import "AppDelegate.h"
+#import "MainViewController.h"
+#import "DiscoverViewController.h"
 
 @interface AppDelegate ()
 
@@ -17,6 +19,28 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
+    [self.window makeKeyAndVisible];
+    
+    MainViewController *mainVC = [[MainViewController alloc]init];
+    UINavigationController *mainNavi = [[UINavigationController alloc]initWithRootViewController:mainVC];
+    mainNavi.tabBarItem.title = @"首页";
+    mainNavi.tabBarItem.image = [[UIImage imageNamed:@"nav_icon_home_normal"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    mainNavi.tabBarItem.selectedImage = [[UIImage imageNamed:@"nav_icon_home_active"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    
+    DiscoverViewController *disVC = [[DiscoverViewController alloc]init];
+    UINavigationController *disNavi = [[UINavigationController alloc]initWithRootViewController:disVC];
+    disNavi.tabBarItem.title = @"发现";
+    disNavi.tabBarItem.image = [[UIImage imageNamed:@"nav_icon_discover_normal"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    disNavi.tabBarItem.selectedImage = [[UIImage imageNamed:@"nav_icon_discover_active"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    
+    UITabBarController *tabBar = [[UITabBarController alloc]init];
+    tabBar.viewControllers = @[mainNavi,disNavi];
+    
+    self.window.rootViewController = tabBar;
+
+    
     return YES;
 }
 

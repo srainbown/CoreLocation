@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>(*∩_∩*)始终访问位置(*∩_∩*)</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>(*∩_∩*)在使用期间访问位置(*∩_∩*)</string>
+	<key>NSLocationUsageDescription</key>
+	<string>(*∩_∩*)App需要您的同意,才能访问位置(*∩_∩*)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
@@ -22,8 +28,6 @@
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
-	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

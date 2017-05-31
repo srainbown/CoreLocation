@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  DiscoverViewController.h
 //  定位
 //
 //  Created by 李自杨 on 2017/5/31.
@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
-
+@interface DiscoverViewController : UIViewController
 
 @end
-
