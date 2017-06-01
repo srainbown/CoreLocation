@@ -5,7 +5,7 @@
 //  Created by 李自杨 on 2017/5/31.
 //  Copyright © 2017年 View. All rights reserved.
 //
-
+/**<设置字体大小*/
 #import "DiscoverViewController.h"
 
 @interface DiscoverViewController ()
@@ -19,6 +19,7 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     self.navigationItem.title = @"发现";
+    
 }
 
 

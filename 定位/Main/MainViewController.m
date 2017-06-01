@@ -44,15 +44,13 @@
  */
 
 
-@interface MainViewController ()<CLLocationManagerDelegate>
+@interface MainViewController ()<CLLocationManagerDelegate,UITableViewDelegate,UITableViewDataSource>
 
 @property (nonatomic, strong) CLLocationManager *manager;
-
 @property (nonatomic, strong) UIImageView *compassView;//指南针图片
-
 @property (nonatomic, strong) CLGeocoder *geoC;//地理编码器
-
-@property (nonatomic, strong) UILabel *clLabel;
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) NSMutableArray *dataArray;
 
 @end
 
@@ -63,6 +61,11 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     self.navigationItem.title = @"首页";
+    
+    self.tableView = [[UITableView alloc]initWithFrame:self.view.bounds style:UITableViewStylePlain];
+    [self.view addSubview:self.tableView];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
 
     //请求使用期间定位授权
     [self.manager requestWhenInUseAuthorization];
@@ -71,7 +74,18 @@
     //获取单次位置信息
 //    [self.manager requestLocation];
     
+    /*
+     kCLLocationAccuracyBest：最精确定位
+     CLLocationAccuracy kCLLocationAccuracyNearestTenMeters：十米误差范围
+     kCLLocationAccuracyHundredMeters:百米误差范围
+     kCLLocationAccuracyKilometer:千米误差范围
+     kCLLocationAccuracyThreeKilometers:三千米误差范围
+     */
+    self.manager.desiredAccuracy = kCLLocationAccuracyBest;
 
+    //位置信息更新最小距离，只有移动大于这个距离才更新位置信息，默认为kCLDistanceFilterNone：不进行距离限制
+    self.manager.distanceFilter = 100;
+    
     
     // 获取设备朝向前, 先判断"磁力计"是否可用
     if ([CLLocationManager headingAvailable]) {
@@ -81,7 +95,7 @@
     
     //开始更新用户的位置信息
     [self.manager startUpdatingLocation];
-   
+
 }
 
 #pragma mark -- 懒加载
@@ -100,23 +114,13 @@
     }
     return _geoC;
 }
--(UILabel *)clLabel{
-    if (_clLabel == nil) {
-        _clLabel = [[UILabel alloc]init];
-        [self.view addSubview:_clLabel];
-        [_clLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerY.equalTo(self.view);
-            make.left.mas_equalTo(20 * KWidthScale);
-            make.right.mas_equalTo(-20 * KWidthScale);
-        }];
-        _clLabel.textAlignment = NSTextAlignmentCenter;
-        _clLabel.textColor = [UIColor orangeColor];
-        _clLabel.numberOfLines = 0;
-        
-    }
-    return _clLabel;
-}
 
+-(NSMutableArray *)dataArray{
+    if (_dataArray == nil) {
+        _dataArray = [NSMutableArray array];
+    }
+    return _dataArray;
+}
 
 #pragma mark -- CLLocationManagerDelegate
 -(void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error{
@@ -131,7 +135,6 @@
      */
 }
 
-
 -(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations{
     
     NSLog(@"每当请求到位置信息时，都会调用此方法");
@@ -139,20 +142,62 @@
     if (loc.horizontalAccuracy < 0) {
         return;
     }
+    
+    [self.dataArray removeAllObjects];
   
     [self.geoC reverseGeocodeLocation:loc completionHandler:^(NSArray<CLPlacemark *> * _Nullable placemarks, NSError * _Nullable error) {
         if (placemarks.count > 0) {
-    
+            
             //模拟器始终显示为苹果总部地址
             //包含区,街道等信息的地标对象
-            CLPlacemark *placeMark = [placemarks lastObject];
-            //城市名称 (四大直辖市的城市信息无法通过locality获得，只能通过获取省份的方法来获得（如果city为空，则可知为直辖市）)
-            NSString *city = placeMark.locality;
-            //街道名称
-            NSString *street = placeMark.thoroughfare;
-            //全称
-            NSString *name = placeMark.name;
-            self.clLabel.text = [NSString stringWithFormat:@" 城市 : %@ , 街道 : %@ , 全称 : %@ ",city,street,name];
+            CLPlacemark *placemark = [placemarks lastObject];
+            //位置
+//            CLLocation *location = placemark.location;
+            //区域
+//            CLRegion *region = placemark.region;
+            //详细地址信息字典
+//            NSDictionary *addressDic = placemark.addressDictionary;
+            //地名
+            NSString *name = KNSString(@"地名",placemark.name);
+            [self.dataArray addObject:name];
+            //街道
+            NSString *thoroughfare = KNSString(@"街道",placemark.thoroughfare);
+            [self.dataArray addObject:thoroughfare];
+            //街道相关信息,例如门牌等
+            NSString *subThoroughfare = KNSString(@"街道相关信息,例如门牌等",placemark.subThoroughfare);
+            [self.dataArray addObject:subThoroughfare];
+            //城市
+            //注意:城市名称 (四大直辖市的城市信息无法通过locality获得，只能通过获取省份的方法来获得（如果city为空，则可知为直辖市）)
+            NSString *locality = KNSString(@"城市",placemark.locality);
+            [self.dataArray addObject:locality];
+            //城市相关信息,例如标志性建筑
+            NSString *subLocality = KNSString(@"城市相关信息,例如标志性建筑",placemark.subLocality);
+            [self.dataArray addObject:subLocality];
+            //省
+            NSString *administrativeArea = KNSString(@"省",placemark.administrativeArea);
+            [self.dataArray addObject:administrativeArea];
+            //其他行政区域信息
+            NSString *subAdministrativeArea = KNSString(@"其他行政区域信息",placemark.subAdministrativeArea);
+            [self.dataArray addObject:subAdministrativeArea];
+            //邮编
+            NSString *postalCode = KNSString(@"邮编",placemark.postalCode);
+            [self.dataArray addObject:postalCode];
+            //国家编码
+            NSString *ISOcountryCode = KNSString(@"国家编码",placemark.ISOcountryCode);
+            [self.dataArray addObject:ISOcountryCode];
+            //国家
+            NSString *country = KNSString(@"国家",placemark.country);
+            [self.dataArray addObject:country];
+            //水源,湖泊
+            NSString *inlandWater = KNSString(@"水源,湖泊",placemark.inlandWater);
+            [self.dataArray addObject:inlandWater];
+            //海洋
+            NSString *ocean = KNSString(@"海洋",placemark.ocean);
+            [self.dataArray addObject:ocean];
+            
+            [self.tableView reloadData];
+            //关联的或利益相关的地标
+//            NSArray *areasOfInterest = placemark.areasOfInterest;
         }
     }];
     
@@ -297,6 +342,28 @@
          因为设备朝向不涉及用户隐私
      */
     
+}
+
+#pragma mark -- UITableViewDelegate,UITableViewDataSource
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    return 1;
+}
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    return self.dataArray.count;
+}
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return 50;
+}
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    static NSString *cellID = @"cellID";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellID];
+    }
+    cell.textLabel.numberOfLines = 0;
+    cell.textLabel.font = KUIFont(15);
+    cell.textLabel.text = self.dataArray[indexPath.row];
+    return cell;
 }
 
 
